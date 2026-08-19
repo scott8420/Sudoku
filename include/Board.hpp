@@ -37,7 +37,11 @@ public:
     void set_theme(const Theme& t) { m_theme = t; queue_draw(); }
     const Theme& theme() const { return m_theme; }
 
-    void set_mode(Mode m) { m_mode = m; queue_draw(); }  // selection wash is mode-coloured
+    // Mode is now VISIBLE on the board (the selection wash switches to the
+    // Notes token), so setting it has to repaint. Without the queue_draw the
+    // wash would only change on the next unrelated redraw — the feature would
+    // look broken rather than absent.
+    void set_mode(Mode m) { m_mode = m; queue_draw(); }
     Mode mode() const { return m_mode; }
 
     void input_digit(int d);

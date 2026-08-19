@@ -235,8 +235,13 @@ void Board::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int heig
     }
 
     // Washes: selection, then teaching premise + placement, then conflicts.
+    // The selection wash carries the mode: Guess uses the cool `selection`
+    // token, Notes the warm `selection_notes`. That makes the mode readable off
+    // the board itself instead of only off the Notes button in the control bar —
+    // which matters most exactly when you aren't looking at the button, i.e.
+    // while typing digits.
     if (has_selection()) {
-        use(m_theme.selection);
+        use(m_mode == Mode::Notes ? m_theme.selection_notes : m_theme.selection);
         cell_rect(m_sel_r, m_sel_c);
         cr->fill();
     }
