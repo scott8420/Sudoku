@@ -27,7 +27,10 @@ struct Theme {
     Rgba label;         // a..i row/column coordinates (dim chrome)
     Rgba given_digit;   // immutable clue digits
     Rgba entry_digit;   // user-placed digits
-    Rgba pencil;        // small "possible number" pencil marks
+    Rgba pencil;        // small "possible number" pencil marks — matches `label`
+                        // by default: both are quiet annotation around the
+                        // digits, not the digits themselves. Separate tokens so
+                        // a skin can still split them.
     Rgba selection;     // selected-cell wash (Guess mode)
     Rgba selection_notes; // selected-cell wash while in Notes mode (warm cue)
     Rgba conflict;      // conflicting-digit highlight (also teaching eliminations)
@@ -44,7 +47,7 @@ struct Theme {
             /*label        */ {0.42, 0.45, 0.52, 0.85},
             /*given_digit  */ {0.92, 0.93, 0.95, 1.0},
             /*entry_digit  */ {0.45, 0.72, 0.98, 1.0},
-            /*pencil       */ {0.92, 0.93, 0.95, 1.0},
+            /*pencil       */ {0.42, 0.45, 0.52, 0.85},
             /*selection    */ {0.20, 0.40, 0.66, 0.45},
             /*selection_notes*/ {0.85, 0.33, 0.10, 0.68},
             /*conflict     */ {0.88, 0.36, 0.36, 0.45},
