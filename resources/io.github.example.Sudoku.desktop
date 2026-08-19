@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Sudoku
+GenericName=Sudoku Puzzle
+Comment=A modern Sudoku for GNOME with a built-in strategy teacher
+Exec=sudoku
+Icon=io.github.example.Sudoku
+Terminal=false
+Categories=Game;LogicGame;GTK;
+Keywords=sudoku;puzzle;number;logic;grid;
+StartupNotify=true
+StartupWMClass=io.github.example.Sudoku

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <path fill-rule="evenodd" fill="currentColor" stroke="currentColor" stroke-width="0" d="M 58.1731 111.903 C 58.1731 84.2888 80.5589 61.903 108.173 61.903 L 891.827 61.903 C 919.441 61.903 941.827 84.2888 941.827 111.903 L 941.827 888.097 C 941.827 915.711 919.441 938.097 891.827 938.097 L 108.173 938.097 C 80.5589 938.097 58.1731 915.711 58.1731 888.097 L 58.1731 111.903 Z M 5.41998e-14 100 C 5.41998e-14 44.7715 44.7715 0 100 0 L 900 0 C 955.228 0 1000 44.7715 1000 100 L 1000 900 C 1000 955.228 955.228 1000 900 1000 L 100 1000 C 44.7715 1000 5.41998e-14 955.228 5.41998e-14 900 L 5.41998e-14 100 Z"/>
+  <g>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 207.82 723.228 L 401.005 671.464 L 452.769 864.649 L 259.584 916.413 L 207.82 723.228 Z"/>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 83.5867 259.584 L 276.772 207.82 L 328.536 401.005 L 135.351 452.769 L 83.5867 259.584 Z"/>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 145.703 491.406 L 338.888 439.642 L 390.652 632.827 L 197.467 684.591 L 145.703 491.406 Z"/>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 547.231 135.351 L 740.416 83.5867 L 792.18 276.772 L 598.995 328.536 L 547.231 135.351 Z"/>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 671.464 598.995 L 864.649 547.231 L 916.413 740.416 L 723.228 792.18 L 671.464 598.995 Z"/>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 315.409 197.467 L 508.594 145.703 L 560.358 338.888 L 367.173 390.652 L 315.409 197.467 Z"/>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 609.348 367.173 L 802.533 315.409 L 854.297 508.594 L 661.112 560.358 L 609.348 367.173 Z"/>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 439.642 661.112 L 632.827 609.348 L 684.591 802.533 L 491.406 854.297 L 439.642 661.112 Z"/>
+    <path fill="currentColor" stroke="currentColor" stroke-width="0" d="M 377.526 429.289 L 570.711 377.526 L 622.474 570.711 L 429.289 622.474 L 377.526 429.289 Z"/>
+  </g>
+</svg>
