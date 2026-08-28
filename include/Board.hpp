@@ -7,8 +7,11 @@
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/gestureclick.h>
 #include <gtkmm/eventcontrollerkey.h>
+#include <gtkmm/printoperation.h>
+#include <gtkmm/window.h>
 
 #include <sigc++/signal.h>
+#include <string>
 #include <vector>
 
 namespace sudoku {
@@ -46,8 +49,20 @@ public:
 
     void input_digit(int d);
     void clear_selected();
+
+    // Selection has two distinct verbs, because givens are not selectable and
+    // the two paths need to answer that differently.
+    //
+    //   select()        — a TARGETED landing (click, a..i coordinate jump). The
+    //                     user named one cell. If it's a given, the honest
+    //                     answer is "nothing is selected", so it deselects.
+    //   move_selection()— TRAVEL (arrow keys). The user named a direction, not
+    //                     a cell, so givens are skipped over rather than landed
+    //                     on. Deselecting here would strand the keyboard player
+    //                     the moment a clue sat next to them.
     void move_selection(int dr, int dc);
     void select(int r, int c);
+    void deselect();
 
     bool has_selection() const { return m_sel_r >= 0 && m_sel_c >= 0; }
     int  digit_count(int d) const;
@@ -91,20 +106,73 @@ public:
     // not run until the player actually touches the puzzle.
     sigc::signal<void()>& signal_activity() { return m_signal_activity; }
 
+    // ── Rendering, factored out so the printer can reuse it ──────────────────
+    //
+    // `on_draw` used to BE the drawing routine. It is now a caller: it fills in
+    // the on-screen options and hands off to render(). Printing fills in a
+    // different set (light theme, every screen affordance off) and calls the
+    // same code, so the page can never drift from the board.
+    //
+    // Every layer that is a screen affordance rather than puzzle content is a
+    // flag here, because paper wants none of them: a selection wash is a caret,
+    // a conflict wash is live feedback, and printing the mistake red would hand
+    // the solver a partial answer key.
+    struct RenderOpts {
+        const Theme* theme      = nullptr;  // required; null falls back to the board's
+        bool paint_background   = true;     // false on paper -- the page is already white
+        bool labels             = true;     // the a..i gutter coordinates
+        bool selection          = true;
+        bool notes_mode         = false;    // selection wash picks the Notes token
+        bool teaching           = false;
+        bool conflicts          = true;
+        bool mistakes           = true;
+        bool notes              = true;     // the player's pencil marks
+    };
+
+    // Where render() actually put the grid. on_draw caches this for hit-testing;
+    // print discards it. Returned rather than stored so that printing a page
+    // cannot overwrite the geometry the mouse depends on.
+    struct Geometry { double ox = 0, oy = 0, cell = 0; };
+
+    Geometry render(const Cairo::RefPtr<Cairo::Context>& cr,
+                    int width, int height, const RenderOpts& o) const;
+
+    // The mini solution grid for the printed page -- drawn small, digits only,
+    // so the solver can cover it and check afterwards. Separate from render()
+    // because it is a different object: a key, not a board.
+    void draw_solution_key(const Cairo::RefPtr<Cairo::Context>& cr,
+                           double x, double y, double size, const Theme& t) const;
+
+    // False when Solver failed on set_puzzle (shouldn't happen for a generated
+    // puzzle). The printer omits the key rather than printing a grid of blanks.
+    bool has_solution() const;
+
+    // Difficulty is the window's to know, not the board's, so the caller passes
+    // the caption text in. The board supplies the ink.
+    void print(Gtk::Window& parent, const std::string& subtitle);
+
 private:
     void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
     bool on_key(guint keyval, guint keycode, Gdk::ModifierType state);
     void on_click(int n_press, double x, double y);
 
     bool cell_at(double x, double y, int& r, int& c) const;
+    void select_first_open();   // land on the first editable cell, or deselect
     void changed();
 
     model::Grid m_grid;
     model::Grid m_solution;   // the unique solution of the current puzzle (for wrong-answer check)
+
+    // Outlives print(): the preview path renders asynchronously after run()
+    // returns, so the operation cannot be a local. Cleared on signal_done.
+    Glib::RefPtr<Gtk::PrintOperation> m_print_op;
     Theme m_theme       = Theme::default_dark();
     Mode  m_mode        = Mode::Guess;
-    int   m_sel_r       = 0;
-    int   m_sel_c       = 0;
+    // No selection until a puzzle is set. (0,0) was the old default and it is
+    // a given about as often as any other cell — so the board could boot with
+    // an unselectable cell washed.
+    int   m_sel_r       = -1;
+    int   m_sel_c       = -1;
     int   m_pending_col = -1;
     bool  m_show_conflicts    = true;
     bool  m_highlight_mistakes = true;

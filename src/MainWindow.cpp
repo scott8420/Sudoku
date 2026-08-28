@@ -58,8 +58,9 @@ MainWindow::MainWindow(Application& /*app*/) {
     m_difficulty = dd;
     header->pack_end(*dd);
 
-    // Hamburger menu → Preferences / About / Quit.
+    // Hamburger menu → Print / Preferences / About / Quit.
     auto menu = Gio::Menu::create();
+    menu->append("Print\u2026", "win.print");
     menu->append("Preferences", "win.preferences");
     menu->append("Keyboard Shortcuts", "win.shortcuts");
     menu->append("About Sudoku", "win.about");
@@ -73,6 +74,7 @@ MainWindow::MainWindow(Application& /*app*/) {
     // ── Actions ───────────────────────────────────────────────────────────────
     add_action("new-game", sigc::mem_fun(*this, &MainWindow::on_new_game));
     add_action("about", sigc::mem_fun(*this, &MainWindow::on_about));
+    add_action("print", sigc::mem_fun(*this, &MainWindow::on_print));
     add_action("preferences", sigc::mem_fun(*this, &MainWindow::on_preferences));
     add_action("shortcuts", sigc::mem_fun(*this, &MainWindow::on_shortcuts));
     add_action("toggle-notes", [this]() {
@@ -333,6 +335,15 @@ void MainWindow::push_timer_view() {
     m_stats_panel.set_paused(m_timer_state == TimerState::Paused);
     m_stats_panel.set_pause_enabled(m_timer_state == TimerState::Running ||
                                     m_timer_state == TimerState::Paused);
+}
+
+void MainWindow::on_print() {
+    // The board owns the ink; the window owns the caption. Difficulty lives
+    // here (it is a header-bar choice, not board state), so it is passed in
+    // rather than reached for -- the Board still knows nothing about bands.
+    std::string band = model::name(m_current_difficulty);
+    if (!band.empty()) band[0] = char(std::toupper((unsigned char)band[0]));
+    m_board.print(*this, band);
 }
 
 void MainWindow::show_success(model::Difficulty d, int seconds) {

@@ -67,6 +67,7 @@ private:
     void on_about();
     void on_preferences();
     void on_shortcuts();   // lazy-build + show the keyboard reference window
+    void on_print();       // hand the board to Gtk::PrintOperation (PDF via the dialog)
     model::Difficulty selected_difficulty() const;
 
     Board         m_board;

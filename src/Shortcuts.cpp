@@ -103,6 +103,7 @@ const std::vector<ShortcutSpec>& shortcut_registry() {
 
         // ── Game ───────────────────────────────────────────────────────────────
         {"Game", "win.new-game", {"<Ctrl>n"}, "", "New game"},
+        {"Game", "win.print", {"<Ctrl>p"}, "", "Print the puzzle\u2026"},
 
         // ── General ──────────────────────────────────────────────────────────────
         {"General", "win.preferences", {"<Ctrl>comma"}, "", "Preferences\u2026"},
