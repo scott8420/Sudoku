@@ -74,6 +74,33 @@ inline const char* SUDOKU_CSS = R"CSS(
     #mode_notes:checked:hover {
         background-color: rgba(224, 106, 38, 1);
     }
+
+    /* A digit with all nine of its cells filled is SPENT — there is nowhere
+       left to put it. The pad button was already going insensitive for that,
+       but "greyed out" is the same look a button wears for every other reason
+       (the puzzle is solved, the app is busy), so the one piece of information
+       the player wanted from it — "am I done with 7?" — had to be read by
+       counting. Green says it directly.
+
+       Green, not blue: the entry digits are blue in the default skins, so a
+       blue pad button would rhyme with "this is a number you typed" rather than
+       "this number is finished".
+
+       The :disabled restatement is the load-bearing half. GTK dims a disabled
+       button by dropping the foreground/background toward the background
+       colour, which would wash this cue out at exactly the moment it fires —
+       the button is insensitive precisely BECAUSE the digit is done. The
+       colours are set opaque again for that state, and opacity is pinned to 1
+       in case the theme dims that way instead. */
+    button.digit-done,
+    button.digit-done:disabled {
+        background-image: none;
+        background-color: rgba(38, 122, 66, 0.97);
+        color: rgba(238, 248, 240, 1);
+        border-color: rgba(58, 150, 88, 1);
+        opacity: 1;
+        font-weight: bold;
+    }
 )CSS";
 
 }  // namespace sudoku

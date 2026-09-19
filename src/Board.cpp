@@ -117,6 +117,17 @@ void Board::select_first_open() {
 
 void Board::input_digit(int d) {
     if (!has_selection() || m_grid.given(m_sel_r, m_sel_c)) return;
+
+    // A spent digit is refused outright -- value or note, keyboard or pad. The
+    // pad button is the visible statement of this rule (green, insensitive) and
+    // already refuses both modes, because both go through here. The keyboard
+    // reaches this function directly, so without the check the rule held for
+    // the mouse and not for the keys.
+    //
+    // Not a lockout: clearing any cell holding this digit drops the count below
+    // nine and makes it enterable again. That is how a misplaced one gets fixed.
+    if (digit_complete(d)) return;
+
     if (m_mode == Mode::Guess) {
         if (!m_grid.place(m_sel_r, m_sel_c, d)) return;
 
@@ -161,6 +172,19 @@ int Board::digit_count(int d) const {
     for (int r = 0; r < model::N; ++r)
         for (int c = 0; c < model::N; ++c)
             if (m_grid.value(r, c) == d) ++n;
+    return n;
+}
+
+int Board::digit_correct_count(int d) const {
+    // Without a solution (Solver failed in set_puzzle -- shouldn't happen for a
+    // generated puzzle) fall back to counting occurrences: the old behaviour,
+    // and the safer default when correctness can't be judged.
+    if (!has_solution()) return digit_count(d);
+
+    int n = 0;
+    for (int r = 0; r < model::N; ++r)
+        for (int c = 0; c < model::N; ++c)
+            if (m_grid.value(r, c) == d && m_solution.value(r, c) == d) ++n;
     return n;
 }
 

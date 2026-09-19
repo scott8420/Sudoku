@@ -2,18 +2,22 @@
 <!--
   App resources. The icon is placed under the icon-theme resource layout
   (<base>/icons/scalable/apps/<name>.svg) so that, once the app adds
-  "/io/github/example/Sudoku/icons" to the icon theme's resource path, the
-  themed icon "io.github.example.Sudoku-symbolic" resolves by name -- used for
+  "/io/github/scott8420/Sudoku/icons" to the icon theme's resource path, the
+  themed icon "io.github.scott8420.Sudoku-symbolic" resolves by name -- used for
   the window icon and the About-dialog logo. The "-symbolic" name makes GTK
   recolor it to the foreground, so it stays visible on light or dark chrome.
 
-  Prefix is derived from the app ID (io.github.example.Sudoku). When the real
-  reverse-DNS ID is chosen, this prefix, the SVG filename, the .desktop name,
-  and the icon-name strings in the code all rename together.
+  Prefix and filenames are derived from the app ID (io.github.scott8420.Sudoku).
+  This file is the ONE place the id is still spelled by hand: glib-compile-
+  resources reads the prefix and the <file> entries literally, so they cannot be
+  substituted from CMake without generating this file. Everything else -- the
+  resource filenames CMake installs, and the id strings in the code -- follows
+  SUDOKU_APP_ID in CMakeLists.txt. If the id ever changes again, this file and
+  the three files in this directory rename together.
 -->
 <gresources>
-  <gresource prefix="/io/github/example/Sudoku/icons/scalable/apps">
-    <file>io.github.example.Sudoku.svg</file>
-    <file>io.github.example.Sudoku-symbolic.svg</file>
+  <gresource prefix="/io/github/scott8420/Sudoku/icons/scalable/apps">
+    <file>io.github.scott8420.Sudoku.svg</file>
+    <file>io.github.scott8420.Sudoku-symbolic.svg</file>
   </gresource>
 </gresources>

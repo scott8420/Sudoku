@@ -89,7 +89,7 @@ MainWindow::MainWindow(Application& /*app*/) {
     // Logo from the compiled-in gresource icon theme (registered in
     // Application::on_activate). The SVG is a clean viewBox-only symbolic icon
     // (Folio's shape) so the theme scales it to the logo area and recolours it.
-    m_about.set_logo_icon_name("io.github.example.Sudoku-symbolic");
+    m_about.set_logo_icon_name(SUDOKU_APP_ID "-symbolic");
     m_about.set_comments("A modern Sudoku for GNOME with a built-in strategy teacher.");
     m_about.set_license_type(Gtk::License::GPL_3_0);
     m_about.set_hide_on_close(true);
@@ -411,9 +411,20 @@ void MainWindow::on_new_game() {
 
 void MainWindow::refresh_controls() {
     const bool solved = m_board.solved();
-    for (int d = 1; d <= 9; ++d)
-        if (m_numpad[d - 1])
-            m_numpad[d - 1]->set_sensitive(!solved && !m_board.digit_complete(d));
+    for (int d = 1; d <= 9; ++d) {
+        Gtk::Button* b = m_numpad[d - 1];
+        if (!b) continue;
+
+        // Two different facts, and they were collapsed into one before: a digit
+        // is SPENT (all nine placed — nothing left to enter), or the button is
+        // merely unavailable (the puzzle is finished). Insensitivity covers
+        // both, so on its own it can't tell the player which. The class marks
+        // only the first, and the CSS colours it.
+        const bool spent = m_board.digit_complete(d);
+        b->set_sensitive(!solved && !spent);
+        if (spent) b->add_css_class("digit-done");
+        else       b->remove_css_class("digit-done");
+    }
 
     if (solved && !m_was_solved) {
         // Rising edge: stop the clock, bank the result, celebrate — exactly once.

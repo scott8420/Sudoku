@@ -17,8 +17,10 @@ Glib::RefPtr<Application> Application::create() {
 }
 
 Application::Application()
-    : Gtk::Application("io.github.example.Sudoku",  // must match SUDOKU_APP_ID
-                       Gio::Application::Flags::DEFAULT_FLAGS) {
+    // SUDOKU_APP_ID comes from CMakeLists.txt. It used to be a literal here
+    // with a comment asking the reader to keep it matching -- which is a rule
+    // the build could enforce instead, so now it does.
+    : Gtk::Application(SUDOKU_APP_ID, Gio::Application::Flags::DEFAULT_FLAGS) {
     log::init();
     if (auto lg = log::get(log::Area::App)) lg->info("Sudoku starting");
 }
@@ -49,8 +51,8 @@ void Application::on_activate() {
     // the "-symbolic" variant (recoloured) is used only for the About logo.
     if (auto display = Gdk::Display::get_default())
         Gtk::IconTheme::get_for_display(display)->add_resource_path(
-            "/io/github/example/Sudoku/icons");
-    Gtk::Window::set_default_icon_name("io.github.example.Sudoku");
+            SUDOKU_APP_PATH "/icons");
+    Gtk::Window::set_default_icon_name(SUDOKU_APP_ID);
 
     auto* win = new MainWindow(*this);
     add_window(*win);

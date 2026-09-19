@@ -7,10 +7,25 @@ cmake_minimum_required(VERSION 3.20)
 project(sudoku VERSION 0.1.0 LANGUAGES C CXX)
 
 # ── Application identity ──────────────────────────────────────────────────────
-# Single source of truth for the freedesktop application ID. Must match the
-# string passed to Gtk::Application in src/Application.cpp.
-# TODO: change to your real reverse-DNS id before any packaging work.
-set(SUDOKU_APP_ID "io.github.example.Sudoku")
+# Single source of truth for the freedesktop application ID, derived from the
+# project's GitHub home (github.com/scott8420/Sudoku).
+#
+# It used to be a source of truth in name only: the same string was also typed
+# out in Application.cpp twice and in MainWindow.cpp once, with a comment asking
+# the next editor to keep them in step. Now the C++ side gets it as a compile
+# definition, so a change here reaches the code by rebuilding rather than by
+# remembering.
+#
+# SUDOKU_APP_PATH is the GResource/GApplication path form -- the same id with
+# the dots turned into slashes. Derived rather than written out, for the same
+# reason.
+set(SUDOKU_APP_ID "io.github.scott8420.Sudoku")
+string(REPLACE "." "/" SUDOKU_APP_PATH "/${SUDOKU_APP_ID}")
+
+# The resource FILE names (resources/${SUDOKU_APP_ID}.svg, .desktop) follow this
+# variable automatically below. The one place the id is still spelled by hand is
+# resources/sudoku.gresource.xml, whose <gresource prefix> and <file> entries
+# glib-compile-resources reads literally -- rename those with the files.
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -100,6 +115,11 @@ add_executable(sudoku
     src/WidgetRegistry.cpp
 )
 target_include_directories(sudoku PRIVATE include ${GTKMM_INCLUDE_DIRS})
+# The identity above, handed to the code. Only the app target gets these: the
+# pure engine and the selftest have no business knowing the app has an id.
+target_compile_definitions(sudoku PRIVATE
+    SUDOKU_APP_ID="${SUDOKU_APP_ID}"
+    SUDOKU_APP_PATH="${SUDOKU_APP_PATH}")
 target_link_libraries(sudoku    PRIVATE ${GTKMM_LIBRARIES} sudoku_model spdlog::spdlog nlohmann_json::nlohmann_json)
 target_compile_options(sudoku   PRIVATE ${GTKMM_CFLAGS_OTHER})
 

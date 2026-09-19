@@ -24,6 +24,11 @@ Debian/Ubuntu), `cmake` (>= 3.20), and `pkg-config`.
 
 ## Application ID
 
-`SUDOKU_APP_ID` in `CMakeLists.txt` is the placeholder
-`io.github.example.Sudoku` — change it to your real reverse-DNS id
-before any packaging work.
+`io.github.scott8420.Sudoku`, set once as `SUDOKU_APP_ID` in
+`CMakeLists.txt`. The build hands it to the code as a compile
+definition (`SUDOKU_APP_ID`, plus the slash form `SUDOKU_APP_PATH`),
+and the resource filenames follow the variable, so the id is never
+retyped in C++. The single exception is
+`resources/sudoku.gresource.xml`, which `glib-compile-resources` reads
+literally — change that file and the three files beside it together if
+the id ever moves.

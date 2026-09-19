@@ -66,7 +66,24 @@ public:
 
     bool has_selection() const { return m_sel_r >= 0 && m_sel_c >= 0; }
     int  digit_count(int d) const;
-    bool digit_complete(int d) const { return digit_count(d) >= model::N; }
+
+    // How many of digit d are placed CORRECTLY -- givens plus user entries that
+    // agree with the solution. digit_count() counts occurrences; this counts
+    // the ones that are actually right. The difference is what "spent" has to
+    // mean: nine 5s on the board with one in the wrong cell is not nine 5s
+    // solved, and treating it as such greys out the button the player needs in
+    // order to place the real one.
+    int  digit_correct_count(int d) const;
+
+    // A digit is spent when all nine of its cells are correctly filled. This
+    // one predicate drives three things -- the pad button's colour, its
+    // sensitivity, and the refusal in input_digit() -- so they cannot drift.
+    //
+    // It does consult the solution, which is the oracle tradeoff the note
+    // pruning already makes. A convenience gate is the mild end of it: the most
+    // it can do is withhold a digit, and clearing a cell always gives it back.
+    // It never places anything for the player.
+    bool digit_complete(int d) const { return digit_correct_count(d) >= model::N; }
     bool solved() const { return m_grid.solved(); }
 
     // Preference: whether conflicting duplicates get a wash. On by default
