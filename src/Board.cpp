@@ -36,7 +36,8 @@ Board::Board() {
 Board::~Board() { registry::remove(this); }
 
 void Board::set_puzzle(const model::Grid& g) {
-    m_grid = g;
+    m_grid   = g;
+    m_puzzle = g;
     // Solve a copy once so wrong-answer checking has the unique solution to
     // compare against. The puzzle is generated unique, so this is deterministic.
     m_solution = g;
@@ -46,6 +47,22 @@ void Board::set_puzzle(const model::Grid& g) {
     // was a hardcoded (0,0), which is a given in most generated puzzles.
     select_first_open();
     changed();  // also clears any teaching overlay
+}
+
+void Board::restart() {
+    m_grid = m_puzzle;   // m_solution is unchanged -- it is the same puzzle
+    m_pending_col = -1;
+    select_first_open();
+    changed();           // clears any teaching overlay, refreshes controls
+}
+
+bool Board::has_progress() const {
+    for (int r = 0; r < model::N; ++r)
+        for (int c = 0; c < model::N; ++c) {
+            if (m_grid.given(r, c)) continue;
+            if (!m_grid.empty(r, c) || m_grid.notes(r, c) != 0) return true;
+        }
+    return false;
 }
 
 void Board::fill_candidates() {

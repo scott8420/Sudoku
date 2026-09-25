@@ -33,6 +33,16 @@ public:
     ~Board() override;
 
     void set_puzzle(const model::Grid& g);
+
+    // Put the current puzzle back to how it was dealt: every player value and
+    // every pencil mark gone, givens untouched, same solution. Implemented as a
+    // copy of the puzzle set_puzzle() received, not a walk over the cells --
+    // the dealt grid is the definition of "the start", so nothing can be missed.
+    void restart();
+
+    // True when the player has written anything -- a value or a pencil mark --
+    // that restart() would remove. Drives the Clear button's sensitivity.
+    bool has_progress() const;
     const model::Grid& grid() const { return m_grid; }
 
     // Apply a skin. The board draws entirely from theme tokens, so re-theming
@@ -178,6 +188,7 @@ private:
     void changed();
 
     model::Grid m_grid;
+    model::Grid m_puzzle;     // the grid as dealt by set_puzzle (restart() copies it back)
     model::Grid m_solution;   // the unique solution of the current puzzle (for wrong-answer check)
 
     // Outlives print(): the preview path renders asynchronously after run()

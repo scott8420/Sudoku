@@ -13,3 +13,6 @@ compile_commands.json
 .DS_Store
 .vscode/
 .idea/
+
+# Makefile (bare-compiler model build) output
+/selftest

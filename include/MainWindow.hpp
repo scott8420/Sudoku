@@ -8,6 +8,7 @@
 #include "Theme.hpp"
 #include "model/Generator.hpp"
 
+#include <giomm/simpleaction.h>
 #include <gtkmm/aboutdialog.h>
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/dropdown.h>
@@ -42,6 +43,7 @@ public:
 
 private:
     void on_new_game();
+    void on_clear_board();   // confirm, then Board::restart (same puzzle, clock keeps running)
     void refresh_controls();
 
     // Drawers. Only one opens at a time; the shared scrim closes whichever is
@@ -95,6 +97,7 @@ private:
     Glib::RefPtr<Gtk::StringList> m_difficulty_model;
     Gtk::DropDown*     m_difficulty = nullptr;
     Gtk::ToggleButton* m_notes_mode = nullptr;
+    Glib::RefPtr<Gio::SimpleAction> m_clear_action;   // enabled only while there is progress to lose
     std::array<Gtk::Button*, 9> m_numpad{};
     model::Generator m_generator;
 };

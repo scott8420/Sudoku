@@ -51,6 +51,14 @@ MainWindow::MainWindow(Application& /*app*/) {
     new_btn->set_action_name("win.new-game");
     header->pack_start(*new_btn);
 
+    // Clear: back to the dealt puzzle (same givens, same solution). Game-level,
+    // so it sits beside New Game rather than in the bottom bar with the
+    // cell-level controls -- Del already clears a single cell.
+    auto* clear_btn = Gtk::make_managed<widgets::Button>("hb_clear_board", "Clear");
+    clear_btn->set_action_name("win.clear-board");
+    clear_btn->set_tooltip_text("Clear all your entries and notes, back to the starting puzzle");
+    header->pack_start(*clear_btn);
+
     m_difficulty_model = Gtk::StringList::create(
         std::vector<Glib::ustring>{"Easy", "Medium", "Hard", "Expert"});
     auto* dd = Gtk::make_managed<widgets::DropDown>("hb_difficulty", m_difficulty_model);
@@ -73,6 +81,7 @@ MainWindow::MainWindow(Application& /*app*/) {
 
     // ── Actions ───────────────────────────────────────────────────────────────
     add_action("new-game", sigc::mem_fun(*this, &MainWindow::on_new_game));
+    m_clear_action = add_action("clear-board", sigc::mem_fun(*this, &MainWindow::on_clear_board));
     add_action("about", sigc::mem_fun(*this, &MainWindow::on_about));
     add_action("print", sigc::mem_fun(*this, &MainWindow::on_print));
     add_action("preferences", sigc::mem_fun(*this, &MainWindow::on_preferences));
@@ -85,13 +94,15 @@ MainWindow::MainWindow(Application& /*app*/) {
 
     // About + Preferences are hide-on-close singletons owned by the window.
     m_about.set_program_name("Sudoku");
-    m_about.set_version("0.1.0");
+    m_about.set_version(SUDOKU_VERSION);   // project(VERSION) in CMakeLists.txt
     // Logo from the compiled-in gresource icon theme (registered in
     // Application::on_activate). The SVG is a clean viewBox-only symbolic icon
     // (Folio's shape) so the theme scales it to the logo area and recolours it.
     m_about.set_logo_icon_name(SUDOKU_APP_ID "-symbolic");
     m_about.set_comments("A modern Sudoku for GNOME with a built-in strategy teacher.");
-    m_about.set_license_type(Gtk::License::GPL_3_0);
+    m_about.set_website("https://github.com/scott8420/Sudoku");
+    m_about.set_copyright("\u00A9 2026 Scott Combs");
+    m_about.set_license_type(Gtk::License::MIT_X11);   // matches LICENSE + metainfo
     m_about.set_hide_on_close(true);
 
     m_prefs.signal_show_conflicts().connect(
@@ -365,6 +376,29 @@ void MainWindow::show_success(model::Difficulty d, int seconds) {
     });
 }
 
+void MainWindow::on_clear_board() {
+    if (!m_board.has_progress() || m_board.solved()) return;   // nothing to lose / use New Game
+
+    auto dlg = Gtk::AlertDialog::create();
+    dlg->set_modal(true);
+    dlg->set_message("Clear the board?");
+    dlg->set_detail("This removes every number and note you have entered and "
+                    "returns the puzzle to its starting clues. The clock keeps "
+                    "running. It cannot be undone.");
+    dlg->set_buttons(std::vector<Glib::ustring>{"Cancel", "Clear"});
+    dlg->set_default_button(0);
+    dlg->set_cancel_button(0);
+    dlg->choose(*this, [this, dlg](const Glib::RefPtr<Gio::AsyncResult>& res) {
+        int idx = 0;
+        try { idx = dlg->choose_finish(res); } catch (const Glib::Error&) { return; }
+        if (idx != 1) { m_board.grab_focus(); return; }
+        if (auto lg = log::get(log::Area::Model)) lg->info("board cleared to dealt puzzle");
+        m_strategy_panel.reset();   // any lesson on screen described the old board
+        m_board.restart();
+        m_board.grab_focus();
+    });
+}
+
 void MainWindow::on_about() {
     m_about.set_transient_for(*this);
     m_about.present();
@@ -411,6 +445,11 @@ void MainWindow::on_new_game() {
 
 void MainWindow::refresh_controls() {
     const bool solved = m_board.solved();
+
+    // Clear is live only when it would remove something, and not once solved
+    // (a solved board's way forward is New Game; clearing it would re-arm
+    // nothing and just throw the finished grid away).
+    if (m_clear_action) m_clear_action->set_enabled(!solved && m_board.has_progress());
     for (int d = 1; d <= 9; ++d) {
         Gtk::Button* b = m_numpad[d - 1];
         if (!b) continue;

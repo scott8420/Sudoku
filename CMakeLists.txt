@@ -115,11 +115,12 @@ add_executable(sudoku
     src/WidgetRegistry.cpp
 )
 target_include_directories(sudoku PRIVATE include ${GTKMM_INCLUDE_DIRS})
-# The identity above, handed to the code. Only the app target gets these: the
+# The identity above (and the version from project()), handed to the code. Only the app target gets these: the
 # pure engine and the selftest have no business knowing the app has an id.
 target_compile_definitions(sudoku PRIVATE
     SUDOKU_APP_ID="${SUDOKU_APP_ID}"
-    SUDOKU_APP_PATH="${SUDOKU_APP_PATH}")
+    SUDOKU_APP_PATH="${SUDOKU_APP_PATH}"
+    SUDOKU_VERSION="${PROJECT_VERSION}")
 target_link_libraries(sudoku    PRIVATE ${GTKMM_LIBRARIES} sudoku_model spdlog::spdlog nlohmann_json::nlohmann_json)
 target_compile_options(sudoku   PRIVATE ${GTKMM_CFLAGS_OTHER})
 
@@ -139,3 +140,6 @@ install(FILES resources/${SUDOKU_APP_ID}.desktop
 # the gresource) and is deliberately NOT installed here.
 install(FILES resources/${SUDOKU_APP_ID}.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+# AppStream metadata -- what GNOME Software / Flathub read for the store page.
+install(FILES resources/${SUDOKU_APP_ID}.metainfo.xml
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)

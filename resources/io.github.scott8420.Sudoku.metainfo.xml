@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream metadata. Validate with:
+       appstreamcli validate resources/io.github.scott8420.Sudoku.metainfo.xml
+     The <id> and <launchable> must match SUDOKU_APP_ID and the .desktop name. -->
+<component type="desktop-application">
+  <id>io.github.scott8420.Sudoku</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+
+  <name>Sudoku</name>
+  <summary>A modern Sudoku with a built-in strategy teacher</summary>
+  <developer id="io.github.scott8420">
+    <name>Scott Combs</name>
+  </developer>
+
+  <description>
+    <p>
+      A Sudoku game for GNOME that teaches as you play. Open the Strategies
+      drawer and the board shows where each solving technique applies right
+      now: the candidates, the cells that justify it, and what it rules out.
+    </p>
+    <ul>
+      <li>Four difficulty bands, rated by the techniques a puzzle needs</li>
+      <li>Pencil marks, one-click candidate fill, and mistake highlighting</li>
+      <li>A game clock with per-difficulty best and average times</li>
+      <li>Themeable board skins and full keyboard play</li>
+      <li>Print a puzzle with its solution key</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.scott8420.Sudoku.desktop</launchable>
+  <provides><binary>sudoku</binary></provides>
+
+  <url type="homepage">https://github.com/scott8420/Sudoku</url>
+  <url type="bugtracker">https://github.com/scott8420/Sudoku/issues</url>
+  <url type="vcs-browser">https://github.com/scott8420/Sudoku</url>
+
+  <categories>
+    <category>Game</category>
+    <category>LogicGame</category>
+  </categories>
+  <keywords>
+    <keyword>sudoku</keyword>
+    <keyword>puzzle</keyword>
+    <keyword>logic</keyword>
+  </keywords>
+
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+
+  <content_rating type="oars-1.1"/>
+
+  <releases>
+    <release version="0.1.0" date="2026-09-25"/>
+  </releases>
+</component>
